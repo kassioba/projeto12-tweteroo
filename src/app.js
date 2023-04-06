@@ -7,34 +7,47 @@ app.use(express.json())
 app.use(cors())
 
 const usuarios = []
-const tweets = []
-let img;
+const tweets = [];
 
-app.post('/sign-up', (req, res) => {
-    const { username, avatar} = req.body
+app.post("/sign-up", (req, res) => {
+  const { username, avatar } = req.body;
 
-    const novoUsuario = {
-        username,
-        avatar
+  const novoUsuario = {
+    username,
+    avatar,
+  };
+
+  usuarios.push(novoUsuario);
+  res.send("OK");
+});
+
+app.post("/tweets", (req, res) => {
+  const { username, tweet } = req.body;
+  const usuariosCadastrados = [];
+  let imgUsuario;
+
+  for (let i = 0; i < usuarios.length; i++) {
+    usuariosCadastrados.push(usuarios[i].username);
+
+    if (usuarios[i].username === username) {
+      imgUsuario = usuarios[i].avatar;
     }
+  }
 
-    usuarios.push(novoUsuario)
-    img = avatar
-    res.send('OK')
-})
+  if (!usuariosCadastrados.includes(username)) {
+    res.send("UNAUTHORIZED");
+    return;
+  }
 
-app.post('/tweets', (req, res) => {
-    const {username, tweet} = req.body
+  const novoTweet = {
+    avatar: imgUsuario,
+    username,
+    tweet,
+  };
 
-    const novoTweet = {
-        avatar: img,
-        username,
-        tweet
-    }
-
-    tweets.push(novoTweet)
-    res.send('OK')
-})
+  tweets.push(novoTweet);
+  res.send("OK");
+});
 
 app.get('/tweets', (req, res) => {
     const ultimosTweets = []
